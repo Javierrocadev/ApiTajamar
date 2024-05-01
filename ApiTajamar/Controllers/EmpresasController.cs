@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TajamarProyecto.Models;
-
+using NugetApiPracticasTajamarJRP.Models;
 namespace ApiTajamar.Controllers
 {
     [Route("api/[controller]")]

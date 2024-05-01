@@ -3,6 +3,8 @@ using ApiTajamar.Helpers;
 using ApiTajamar.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,27 +28,52 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 
-builder.Services.AddSwaggerGen(options =>
-{
-    // Set the comments path for the Swagger JSON and UI.
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
-    options.SwaggerDoc("v1", new OpenApiInfo
-	{
-		Title = "Api Tajamar Practicas",
-		Description = "Api dedicada a la recopiliación de las empresas de los alumnos"
-	});
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    // Set the comments path for the Swagger JSON and UI.
+//    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+//    options.IncludeXmlComments(xmlPath);
+//    options.SwaggerDoc("v1", new OpenApiInfo
+//	{
+//		Title = "Api Tajamar Practicas",
+//		Description = "Api dedicada a la recopiliación de las empresas de los alumnos"
+//	});
 
-    // Set the comments path for the Swagger JSON and UI.
+//    // Set the comments path for the Swagger JSON and UI.
     
+//});
+
+
+builder.Services.AddOpenApiDocument(document =>
+{
+    document.Title = "Api Tajamar Practicas Empresas";
+    document.Description = "Api para la gestión de empresas elegidas por usuarios";
+    // CONFIGURAMOS LA SEGURIDAD JWT PARA SWAGGER,
+    // PERMITE AÑADIR EL TOKEN JWT A LA CABECERA.
+    document.AddSecurity("JWT", Enumerable.Empty<string>(),
+        new NSwag.OpenApiSecurityScheme
+        {
+            Type = OpenApiSecuritySchemeType.ApiKey,
+            Name = "Authorization",
+            In = OpenApiSecurityApiKeyLocation.Header,
+            Description = "Copia y pega el Token en el campo 'Value:' así: Bearer {Token JWT}."
+        }
+    );
+    document.OperationProcessors.Add(
+    new AspNetCoreOperationSecurityScopeProcessor("JWT"));
 });
 
+
+
 var app = builder.Build();
-app.UseSwagger();
+//app.UseSwagger();
+
+app.UseOpenApi();
 app.UseSwaggerUI(options =>
 {
-	options.SwaggerEndpoint(url: "/swagger/v1/swagger.json"
+    options.InjectStylesheet("/css/bootstrap.css");
+    options.SwaggerEndpoint(url: "/swagger/v1/swagger.json"
 		, name: "Api Empleados v1");
 	options.RoutePrefix = "";
 });
@@ -58,7 +85,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 

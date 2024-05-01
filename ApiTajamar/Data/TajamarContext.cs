@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TajamarProyecto.Models;
+using NugetApiPracticasTajamarJRP.Models;
 
 namespace ApiTajamar.Data
 {

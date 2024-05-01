@@ -1,11 +1,11 @@
 ﻿using ApiTajamar.Helpers;
-using ApiTajamar.Models;
+
 using ApiTajamar.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using TajamarProyecto.Models;
+using NugetApiPracticasTajamarJRP.Models;
 
 namespace ApiTajamar.Controllers
 {
@@ -33,8 +33,9 @@ namespace ApiTajamar.Controllers
         public async Task<ActionResult> Login(LoginModel model)
         {
             //BUSCAMOS AL usuario EN NUESTRO REPO
+
             Usuario usuario =
-                await this.repo.LogInUsuarioAsync(model.UserName, int.Parse(model.Password));
+                await this.repo.LogInUsuarioAsync(model.UserName, model.Password);
             if (usuario == null)
             {
                 return Unauthorized();

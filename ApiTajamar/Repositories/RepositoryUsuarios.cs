@@ -1,37 +1,48 @@
 ﻿using ApiTajamar.Data;
 using Microsoft.EntityFrameworkCore;
-using TajamarProyecto.Models;
+using NugetApiPracticasTajamarJRP.Models;
+using System.Text;
 
 namespace ApiTajamar.Repositories
 {
-	public class RepositoryUsuarios
-	{
-		private TajamarContext context;
+    public class RepositoryUsuarios
+    {
+        private TajamarContext context;
 
-		public RepositoryUsuarios(TajamarContext context)
-		{
-			this.context = context;
-		}
+        public RepositoryUsuarios(TajamarContext context)
+        {
+            this.context = context;
+        }
 
 
         //SEGURIDAD
-        public async Task<Usuario> LogInUsuarioAsync(string mail,int usuario)
-        {
-            return await this.context.Usuarios.Where(x => x.IdUsuario == usuario && x.Email == mail).FirstOrDefaultAsync();
-        }
+        //public async Task<Usuario> LogInUsuarioAsync(string mail, int usuario)
+        //{
+        //    return await this.context.Usuarios.Where(x => x.IdUsuario == usuario && x.Email == mail).FirstOrDefaultAsync();
+        //}
 
+        public async Task<Usuario> LogInUsuarioAsync(string mail, byte[] password)
+        {
+           
+
+            // Buscar al usuario por correo electrónico y comparar las contraseñas como arreglos de bytes
+            return await this.context.Usuarios
+                .Where(x => x.Email == mail && x.Password == password)
+                .FirstOrDefaultAsync();
+
+        }
 
         //METODOS
 
         public async Task<List<Usuario>> GetUsuariosAsync()
-		{
-			return await this.context.Usuarios.ToListAsync();
-		}
+        {
+            return await this.context.Usuarios.ToListAsync();
+        }
 
         public async Task<Usuario> FindUsuarioAsync(int idUsuario)
-		{
-			return await this.context.Usuarios.FirstOrDefaultAsync(z => z.IdUsuario == idUsuario);
-		}
+        {
+            return await this.context.Usuarios.FirstOrDefaultAsync(z => z.IdUsuario == idUsuario);
+        }
 
         private async Task<int> GetMaxIdUsuarioAsync()
         {
@@ -48,28 +59,28 @@ namespace ApiTajamar.Repositories
 
 
         public async Task InsertUsuarioAsync(int idUsuario, int? idClase, string nombre, string role, string linkedin, string email, int? e1, int? e2, int? e3, int? e4, int? e5, int? e6)
-		{
-			Usuario usuario = new Usuario();
-			usuario.IdUsuario = idUsuario;
-			usuario.IdClase = idClase;
-			usuario.Nombre = nombre;
-			usuario.Email = email;
-			usuario.Role = "Alumno";
-			usuario.Linkedin = linkedin;
-			usuario.Emp_1Id = e1;
-			usuario.Emp_2Id = e2;
-			usuario.Emp_3Id = e3;
-			usuario.Emp_4Id = e4;
-			usuario.Emp_5Id = e5;
-			usuario.Emp_6Id = e6;
-			this.context.Usuarios.Add(usuario);
-			await this.context.SaveChangesAsync();
-		}
+        {
+            Usuario usuario = new Usuario();
+            usuario.IdUsuario = idUsuario;
+            usuario.IdClase = idClase;
+            usuario.Nombre = nombre;
+            usuario.Email = email;
+            usuario.Role = "Alumno";
+            usuario.Linkedin = linkedin;
+            usuario.Emp_1Id = e1;
+            usuario.Emp_2Id = e2;
+            usuario.Emp_3Id = e3;
+            usuario.Emp_4Id = e4;
+            usuario.Emp_5Id = e5;
+            usuario.Emp_6Id = e6;
+            this.context.Usuarios.Add(usuario);
+            await this.context.SaveChangesAsync();
+        }
 
 
         public async Task UpdateUsuarioAsync(int idUsuario, int? idClase, string nombre, string role, string linkedin, string email, int? e1, int? e2, int? e3, int? e4, int? e5, int? e6)
         {
-			Usuario usuario = await this.FindUsuarioAsync(idUsuario);
+            Usuario usuario = await this.FindUsuarioAsync(idUsuario);
             usuario.IdUsuario = idUsuario;
             usuario.IdClase = idClase;
             usuario.Nombre = nombre;
